@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { CalendarIcon, MapPin, Clock } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 
 const SearchForm = () => {
   const [location, setLocation] = useState('Miami International Airport');
@@ -17,11 +17,23 @@ const SearchForm = () => {
   );
   const [pickupTime, setPickupTime] = useState('10:00');
   const [returnTime, setReturnTime] = useState('10:00');
+  const { toast } = useToast();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Search params:', { location, pickupDate, returnDate, pickupTime, returnTime });
-    // Handle search logic here
+    
+    toast({
+      title: "Búsqueda realizada",
+      description: "Desplázate hacia abajo para ver los vehículos disponibles.",
+      duration: 3000,
+    });
+    
+    // Scroll to vehicles section
+    const vehiclesSection = document.getElementById('vehicles');
+    if (vehiclesSection) {
+      vehiclesSection.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   return (

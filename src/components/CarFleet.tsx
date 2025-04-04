@@ -5,6 +5,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { Check } from 'lucide-react';
+import { useVehicle, Vehicle } from '@/context/VehicleContext';
+import { useToast } from '@/components/ui/use-toast';
 
 // Sample car data
 const carData = [
@@ -85,12 +87,29 @@ const carData = [
 const CarFleet = () => {
   const [activeTab, setActiveTab] = useState('todos');
   const [priceRange, setPriceRange] = useState([0, 150]);
+  const { setSelectedVehicle } = useVehicle();
+  const { toast } = useToast();
   
   const filteredCars = carData.filter(car => {
     const categoryMatch = activeTab === 'todos' || car.category === activeTab;
     const priceMatch = car.price >= priceRange[0] && car.price <= priceRange[1];
     return categoryMatch && priceMatch;
   });
+
+  const handleReserveCar = (car: Vehicle) => {
+    setSelectedVehicle(car);
+    toast({
+      title: "Vehículo seleccionado",
+      description: `Has seleccionado el ${car.name} para tu cotización.`,
+      duration: 3000,
+    });
+    
+    // Scroll to pricing section
+    const pricingSection = document.getElementById('pricing');
+    if (pricingSection) {
+      pricingSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <section id="vehicles" className="section bg-gray-50">
@@ -169,7 +188,7 @@ const CarFleet = () => {
 
                   <div className="mt-auto pt-4 flex gap-2">
                     <Button variant="outline" className="flex-1">Detalles</Button>
-                    <Button className="btn-primary flex-1">Reservar</Button>
+                    <Button className="btn-primary flex-1" onClick={() => handleReserveCar(car)}>Reservar</Button>
                   </div>
                 </div>
               </div>

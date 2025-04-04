@@ -1,15 +1,14 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Check, Plus, Minus } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { useVehicle } from '@/context/VehicleContext';
+import { useToast } from '@/components/ui/use-toast';
 
 const PricingSection = () => {
-  const [selectedVehicle, setSelectedVehicle] = useState({
-    name: 'Toyota Corolla',
-    basePrice: 45,
-    image: 'https://images.unsplash.com/photo-1590362891991-f776e747a588?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-  });
+  const { selectedVehicle } = useVehicle();
+  const { toast } = useToast();
 
   const [extras, setExtras] = useState({
     fullInsurance: false,
@@ -33,7 +32,7 @@ const PricingSection = () => {
   };
 
   const calculateTotal = () => {
-    let total = selectedVehicle.basePrice;
+    let total = selectedVehicle.price;
     Object.entries(extras).forEach(([key, value]) => {
       if (value) {
         total += extraPrices[key as keyof typeof extraPrices];
@@ -42,8 +41,16 @@ const PricingSection = () => {
     return total;
   };
 
+  const handleProceedToBooking = () => {
+    toast({
+      title: "Reserva en proceso",
+      description: `Estás reservando un ${selectedVehicle.name} por $${calculateTotal()}/día.`,
+      duration: 5000,
+    });
+  };
+
   return (
-    <section className="section bg-gray-50">
+    <section id="pricing" className="section bg-gray-50">
       <div className="container">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-miami-navy">Cotización Transparente</h2>
@@ -66,7 +73,7 @@ const PricingSection = () => {
                 />
                 <div>
                   <h4 className="text-lg font-medium">{selectedVehicle.name}</h4>
-                  <p className="text-gray-600">Tarifa base: ${selectedVehicle.basePrice}/día</p>
+                  <p className="text-gray-600">Tarifa base: ${selectedVehicle.price}/día</p>
                 </div>
               </div>
 
@@ -154,7 +161,7 @@ const PricingSection = () => {
               <div className="mb-4 space-y-3">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Tarifa base</span>
-                  <span className="font-medium">${selectedVehicle.basePrice}/día</span>
+                  <span className="font-medium">${selectedVehicle.price}/día</span>
                 </div>
                 
                 {extras.fullInsurance && (
@@ -195,7 +202,7 @@ const PricingSection = () => {
                 </div>
               </div>
               
-              <Button className="btn-primary w-full py-6 mb-4">
+              <Button className="btn-primary w-full py-6 mb-4" onClick={handleProceedToBooking}>
                 Proceder a la Reserva
               </Button>
               
