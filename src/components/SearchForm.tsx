@@ -8,7 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { CalendarIcon, MapPin, Clock } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { useVehicle, locations } from '@/context/VehicleContext';
 
 const SearchForm = () => {
@@ -25,9 +25,13 @@ const SearchForm = () => {
     e.preventDefault();
     console.log('Search params:', { selectedLocation, pickupDate, returnDate, pickupTime, returnTime });
     
+    const locationDisplay = selectedLocation === 'all' 
+      ? 'todas las ubicaciones'
+      : locations.find(loc => loc.id === selectedLocation)?.name;
+    
     toast({
       title: "Búsqueda realizada",
-      description: `Buscando vehículos disponibles en ${locations.find(loc => loc.id === selectedLocation)?.name}.`,
+      description: `Buscando vehículos disponibles en ${locationDisplay}.`,
       duration: 3000,
     });
     

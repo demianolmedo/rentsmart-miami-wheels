@@ -10,11 +10,12 @@ export interface Vehicle {
   price: number;
   features: string[];
   available: boolean;
-  location?: string; // Nueva propiedad para ubicación
+  location?: string;
 }
 
 // Define locations
 export const locations = [
+  { id: 'all', name: 'Todas las ubicaciones' },
   { id: 'mia', name: 'Miami International Airport (MIA)' },
   { id: 'fll', name: 'Fort Lauderdale-Hollywood International Airport (FLL)' },
   { id: 'opa', name: 'Miami Opa-locka Executive Airport (OPF)' },
@@ -46,7 +47,7 @@ const VehicleContext = createContext<VehicleContextType | undefined>(undefined);
 
 export const VehicleProvider = ({ children }: { children: ReactNode }) => {
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle>(defaultVehicle);
-  const [selectedLocation, setSelectedLocation] = useState<string>('mia');
+  const [selectedLocation, setSelectedLocation] = useState<string>('all'); // Changed default to 'all'
 
   return (
     <VehicleContext.Provider value={{ 

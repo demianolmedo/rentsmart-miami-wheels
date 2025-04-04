@@ -6,7 +6,7 @@ import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { Check } from 'lucide-react';
 import { useVehicle, Vehicle, locations } from '@/context/VehicleContext';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 // Sample car data con ubicaciones
 const carData = [
@@ -101,7 +101,7 @@ const CarFleet = () => {
   const filteredCars = carData.filter(car => {
     const categoryMatch = activeTab === 'todos' || car.category === activeTab;
     const priceMatch = car.price >= priceRange[0] && car.price <= priceRange[1];
-    const locationMatch = car.location === selectedLocation;
+    const locationMatch = selectedLocation === 'all' || car.location === selectedLocation;
     return categoryMatch && priceMatch && locationMatch;
   });
 
@@ -120,7 +120,9 @@ const CarFleet = () => {
     }
   };
 
-  const selectedLocationName = locations.find(loc => loc.id === selectedLocation)?.name;
+  const selectedLocationName = selectedLocation === 'all' 
+    ? 'Todas las ubicaciones' 
+    : locations.find(loc => loc.id === selectedLocation)?.name;
 
   return (
     <section id="vehicles" className="section bg-gray-50">
