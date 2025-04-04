@@ -5,10 +5,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
 import { Check } from 'lucide-react';
-import { useVehicle, Vehicle } from '@/context/VehicleContext';
+import { useVehicle, Vehicle, locations } from '@/context/VehicleContext';
 import { useToast } from '@/components/ui/use-toast';
 
-// Sample car data
+// Sample car data con ubicaciones
 const carData = [
   {
     id: 1,
@@ -17,7 +17,8 @@ const carData = [
     image: 'https://images.unsplash.com/photo-1590362891991-f776e747a588?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
     price: 45,
     features: ['Automático', '5 Pasajeros', 'A/C', '2 Maletas', '33 MPG'],
-    available: true
+    available: true,
+    location: 'mia'
   },
   {
     id: 2,
@@ -26,7 +27,8 @@ const carData = [
     image: 'https://images.unsplash.com/photo-1584345604476-8ec5f452d1f2?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
     price: 110,
     features: ['Automático', '4 Pasajeros', 'A/C', '2 Maletas', '25 MPG'],
-    available: true
+    available: true,
+    location: 'southbeach'
   },
   {
     id: 3,
@@ -35,7 +37,8 @@ const carData = [
     image: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
     price: 85,
     features: ['Automático', '5 Pasajeros', 'A/C', '3 Maletas', '22 MPG'],
-    available: true
+    available: true,
+    location: 'mia'
   },
   {
     id: 4,
@@ -44,7 +47,8 @@ const carData = [
     image: 'https://images.unsplash.com/photo-1563720223185-11003d516935?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
     price: 40,
     features: ['Automático', '5 Pasajeros', 'A/C', '2 Maletas', '36 MPG'],
-    available: true
+    available: true,
+    location: 'fll'
   },
   {
     id: 5,
@@ -53,7 +57,8 @@ const carData = [
     image: 'https://images.unsplash.com/photo-1575224129957-a044be2fa6ab?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
     price: 120,
     features: ['Automático', '8 Pasajeros', 'A/C', '5 Maletas', '20 MPG'],
-    available: true
+    available: true,
+    location: 'mia'
   },
   {
     id: 6,
@@ -62,7 +67,8 @@ const carData = [
     image: 'https://images.unsplash.com/photo-1552519507-88aa2dfa9fdb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
     price: 100,
     features: ['Automático', '4 Pasajeros', 'A/C', '2 Maletas', '22 MPG'],
-    available: true
+    available: true,
+    location: 'downtown'
   },
   {
     id: 7,
@@ -71,7 +77,8 @@ const carData = [
     image: 'https://images.unsplash.com/photo-1614857166059-ca9e0ba9b4a7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
     price: 35,
     features: ['Automático', '5 Pasajeros', 'A/C', '2 Maletas', '32 MPG'],
-    available: true
+    available: true,
+    location: 'fll'
   },
   {
     id: 8,
@@ -80,20 +87,22 @@ const carData = [
     image: 'https://images.unsplash.com/photo-1568291329666-1a7a38137d71?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
     price: 65,
     features: ['Automático', '5 Pasajeros', 'A/C', '3 Maletas', '28 MPG'],
-    available: true
+    available: true,
+    location: 'opa'
   }
 ];
 
 const CarFleet = () => {
   const [activeTab, setActiveTab] = useState('todos');
   const [priceRange, setPriceRange] = useState([0, 150]);
-  const { setSelectedVehicle } = useVehicle();
+  const { setSelectedVehicle, selectedLocation } = useVehicle();
   const { toast } = useToast();
   
   const filteredCars = carData.filter(car => {
     const categoryMatch = activeTab === 'todos' || car.category === activeTab;
     const priceMatch = car.price >= priceRange[0] && car.price <= priceRange[1];
-    return categoryMatch && priceMatch;
+    const locationMatch = car.location === selectedLocation;
+    return categoryMatch && priceMatch && locationMatch;
   });
 
   const handleReserveCar = (car: Vehicle) => {
@@ -111,13 +120,15 @@ const CarFleet = () => {
     }
   };
 
+  const selectedLocationName = locations.find(loc => loc.id === selectedLocation)?.name;
+
   return (
     <section id="vehicles" className="section bg-gray-50">
       <div className="container">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-miami-navy">Nuestra Flota de Vehículos</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Disponemos de una amplia variedad de vehículos para satisfacer todas tus necesidades. Desde coches económicos hasta SUVs espaciosos y deportivos de lujo.
+            Vehículos disponibles en: <span className="font-semibold">{selectedLocationName}</span>
           </p>
         </div>
 
@@ -157,7 +168,7 @@ const CarFleet = () => {
 
         {filteredCars.length === 0 ? (
           <div className="text-center py-10 bg-white rounded-lg shadow">
-            <p className="text-gray-600">No se encontraron vehículos que coincidan con los criterios seleccionados.</p>
+            <p className="text-gray-600">No se encontraron vehículos disponibles en {selectedLocationName} que coincidan con los criterios seleccionados.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

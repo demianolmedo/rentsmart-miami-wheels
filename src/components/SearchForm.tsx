@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,9 +9,10 @@ import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { CalendarIcon, MapPin, Clock } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { useVehicle, locations } from '@/context/VehicleContext';
 
 const SearchForm = () => {
-  const [location, setLocation] = useState('Miami International Airport');
+  const { selectedLocation, setSelectedLocation } = useVehicle();
   const [pickupDate, setPickupDate] = useState<Date | undefined>(new Date());
   const [returnDate, setReturnDate] = useState<Date | undefined>(
     new Date(new Date().setDate(new Date().getDate() + 3))
@@ -21,11 +23,11 @@ const SearchForm = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Search params:', { location, pickupDate, returnDate, pickupTime, returnTime });
+    console.log('Search params:', { selectedLocation, pickupDate, returnDate, pickupTime, returnTime });
     
     toast({
       title: "Búsqueda realizada",
-      description: "Desplázate hacia abajo para ver los vehículos disponibles.",
+      description: `Buscando vehículos disponibles en ${locations.find(loc => loc.id === selectedLocation)?.name}.`,
       duration: 3000,
     });
     
@@ -42,12 +44,18 @@ const SearchForm = () => {
         {/* Location */}
         <div className="relative">
           <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-miami-teal" size={18} />
-          <Input
-            placeholder="Lugar de recogida"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            className="pl-10 py-6 border-gray-300"
-          />
+          <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+            <SelectTrigger className="pl-10 py-6 border-gray-300">
+              <SelectValue placeholder="Encuentra tu vehículo en ubicación" />
+            </SelectTrigger>
+            <SelectContent>
+              {locations.map((location) => (
+                <SelectItem key={location.id} value={location.id}>
+                  {location.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Pickup Date */}
